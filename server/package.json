@@ -1,0 +1,38 @@
+{
+    "name": "Tweetflash",
+    "version": "1.0.0",
+    "description": "Real Time Chat App",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "start": "nodemon index.js"
+    },
+    "author": "Deng Aguer",
+    "license": "ISC",
+    "dependencies": {
+      "bcrypt": "^5.0.0",
+      "body-parser": "^1.19.0",
+      "compression": "^1.7.4",
+      "config": "^1.29.4",
+      "cors": "^2.8.4",
+      "express": "^4.16.2",
+      "express-async-errors": "^2.1.0",
+      "fawn": "^2.1.5",
+      "ejs": "^3.1.5",
+      "multer": "^1.4.2",
+      "formidable": "^1.2.2",
+      "helmet": "^4.1.1",
+      "http": "0.0.1-security",
+      "joi": "^13.4.0",
+      "joi-objectid": "^2.0.0",
+      "jsonwebtoken": "^8.1.1",
+      "lodash": "^4.17.10",
+      "moment": "^2.20.1",
+      "mongoose": "^5.0.2",
+      "socket.io": "^2.3.0",
+      "winston": "^2.4.0",
+      "gravatar": "^1.8.1",
+      "winston-mongodb": "^3.0.0"
+    }
+  }
+  
