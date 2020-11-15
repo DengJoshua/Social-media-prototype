@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Badge, Icon, Message } from 'rsuite'
+import { Badge, Icon } from 'rsuite'
 
 class Menu extends Component {
     render() {
@@ -29,7 +29,7 @@ class Menu extends Component {
           </NavLink>
                     <NavLink to="/me/friend-requests" className="navlink" activeClassName="active-nav-link" >
                         <i className="fa fa-home"></i> {this.props.user.friendRequests.length === 0 ? "FriendRequests" :
-                            <React.Fragment>FriendRequests <h6 className="badge badge-danger p-1 rounded-circle" >{this.props.user.friendRequests.length}</h6></React.Fragment>
+                            <React.Fragment>FriendRequests <Badge content={this.props.user.friendRequests.length} /></React.Fragment>
                         }
                     </NavLink>
                 </div>

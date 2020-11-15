@@ -41,6 +41,14 @@ export function unFriendUser(myId, reqId) {
     })
 }
 
+export function getMessages(userId, friendId) {
+    return axios.post(apiEndPoint + "/getMessages/" + friendId, {
+        userId
+    })
+}
+
+
+
 export function SendMessage(myId, friendId, message) {
     return axios.post(apiEndPoint + "/sendMessage", {
         myId,

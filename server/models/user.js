@@ -62,6 +62,7 @@ const userSchema = mongoose.Schema({
     friends: [friendSchema],
     posts: [postSchema],
     groups: [],
+    recent: Object,
     notifications: [notificationSchema]
 })
 

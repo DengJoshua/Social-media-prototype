@@ -1,30 +1,63 @@
-import React, { Component } from 'react';
-import { Route, Switch } from 'react-router-dom'
-import NewsFeed from './NewsFeed';
-import Profile from './Profile';
+import React, { useEffect, useState } from 'react';
+import { Switch } from 'react-router-dom'
+import Profile from './User/Profile';
 import Search from './Search';
 import Chat from '../Chat/Chat';
-import FriendRequests from './FriendRequests';
-import Friends from './Friends';
+import FriendRequests from './User/FriendRequests';
+import Friends from './User/Friends';
+import NewsFeed from './Posts/NewsFeed';
+import SpecPost from './Posts/specPost'
+import { likePost, unlikePost, saveComment, getPosts } from '../../services/postService'
+import ProtectedRoute from '../common/protectedRoute'
 
-class RightBody extends Component {
-    render() {
-        const { user } = this.props;
 
-        return (
-        <div className="right-side" >
-        <Switch >
-        <Route exact path="/me/home" render={props => <NewsFeed user={user} {...props} />}/>
-        <Route path="/me/search/" render={props => <Search {...props} user={user}  />} />
-        <Route path="/me/profile" render={props => <Profile {...props} user={user} />} />
-        <Route path="/me/chats" render={props => <Chat {...props} user={user} />} />
-        <Route path="/me/friends" component={Friends} />
-        <Route path="/me/friend-requests" component={FriendRequests} />
-        </Switch>
-        </div>
-        );
+const RightBody = ({ user }) => {
+    const [posts, setPosts] = useState([])
+
+    useEffect(() => {
+        async function fetchPosts() {
+            const { data } = await getPosts()
+            setPosts(data)
+        }
+        fetchPosts()
+    }, [posts])
+
+    const LikePost = async (id) => {
+        await likePost(user._id, id)
     }
-    
+
+    const unLikePost = async (id) => {
+        await unlikePost(user._id, id)
+    }
+
+    const postComment = async (id, comment) => {
+        await saveComment(user._id, id, comment)
+        document.getElementById(id).value = ""
+    }
+
+    return (
+        <div className="right-side" >
+            <Switch >
+                <ProtectedRoute exact path="/me/home" render={props => <NewsFeed {...props} user={user}
+                    unlikePost={unLikePost}
+                    likePost={LikePost}
+                    posts={posts}
+                />}
+                />
+                <ProtectedRoute path="/me/search/" render={props => <Search {...props} user={user} />} />
+                <ProtectedRoute path="/me/profile" render={props => <Profile {...props} user={user} />} />
+                <ProtectedRoute path="/me/chats" render={props => <Chat {...props} user={user} />} />
+                <ProtectedRoute path="/me/friends" render={props => <Friends {...props} user={user} />} />
+                <ProtectedRoute path="/me/friend-requests" render={props => <FriendRequests {...props} user={user} />} />
+                <ProtectedRoute path="/me/home/posts/:id" render={props => <SpecPost {...props} postComment={postComment}
+                    likePost={LikePost}
+                    unlikePost={unLikePost}
+                    user={user}
+                />}
+                />
+            </Switch>
+        </div>
+    );
 }
 
 export default RightBody;

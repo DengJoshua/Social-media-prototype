@@ -8,6 +8,7 @@ router.get('/:id', async (req, res) => {
     res.send(friends)
 })
 
+
 router.post('/getmessages/:id', async (req, res) =>  {
     const userId = req.body.userId
     const me = await User.findById(req.params.id)
@@ -33,6 +34,7 @@ router.post('/sendMessage',  async (req, res) => {
     {
     $push: {
         "friends.$.inbox": {
+        friend: friend.username,
         message: message,
         from: me._id
    }}})
@@ -44,6 +46,7 @@ router.post('/sendMessage',  async (req, res) => {
     {
     $push: {
         "friends.$.inbox": {
+        friend: friend.username, 
         message: message,
         from: me._id
    }}})

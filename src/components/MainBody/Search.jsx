@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getUserProps, searchUsers } from '../../services/userService';
 import { getCurrentUser } from '../../services/authService';
 import queryString from 'query-string';
-import { Button } from 'rsuite';
+import { Button, Loader } from 'rsuite';
 import {
   sendFriendRequest,
   acceptFriendRequest,
@@ -12,7 +12,7 @@ import {
 } from '../../services/friendsService';
 import { Link } from 'react-router-dom';
 
-const Search = ({ location }) => {
+const Search = ({ location, history }) => {
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,36 +64,38 @@ const Search = ({ location }) => {
   };
 
   return isLoading ? (
-    <img
-      src={require('../../images/spinner.gif')}
-      style={{ margin: 'auto', display: 'block', width: "60px" }}
-      alt=""
-    />
+    <Loader center />
   ) : (
       <div className="search-section">
-        <Link to="/me/home"  ><i className="fa fa-arrow-left goback" /></Link>
-        <h6>Showing search results for "{Query}".</h6>
-        <br />
         {users.length === 0 ? (
-          <h6>No results found.</h6>
+          <React.Fragment>
+            <Link to="/me/home"  ><i className="fa fa-arrow-left goback" /></Link>
+            <h6>No results found for "{Query}".</h6>
+          </React.Fragment>
         ) : (
-            users.map((listItem) => {
-              return listItem._id.toString() === user._id.toString() ? null : (
-                <div className="search-user d-flex justify-content-between" key={listItem._id} >
-                  <div className="d-flex">
-                    <img
-                      src={listItem.profile.profilePic}
-                      alt={listItem.username}
-                    />
-                    <h6>{listItem.username}</h6>
+            <div className="search-section">
+              <i className="fa fa-arrow-left goback" onClick={() => history.goBack()} />
+              <h6>Showing search results for "{Query}".</h6>
+              {users.map((listItem) => {
+                return listItem._id.toString() === user._id.toString() ? null : (
+                  <div className="search-user d-flex justify-content-between" key={listItem._id} >
+                    <div className="d-flex">
+                      <img
+                        src={listItem.profile.profilePic}
+                        alt={listItem.username}
+                      />
+                      <p className="username">{listItem.username}</p>
+                    </div>
+                    <React.Fragment>{checkIsFriend(listItem)}</React.Fragment>
                   </div>
-                  <React.Fragment>{checkIsFriend(listItem)}</React.Fragment>
-                </div>
-              )
-            })
+                )
+              })
+              }
+            </div>
           )}
       </div>
     );
+
   function checkIsFriend(check) {
     let len = user.friends.length
     for (let i = 0; i < len; i++) {
@@ -107,53 +109,55 @@ const Search = ({ location }) => {
                 className="mr-2"
               >
                 Request sent.
-              </Button>
+          </Button>
               <Button
                 color="red"
                 onClick={() => cancelfriendRequest(user._id, check._id)}
               >
                 Cancel Request
-              </Button>
+          </Button>
             </div>
           );
         } else
           return (
             <div className="user-btns float-right">
-              <Button color="blue" className="mr-2">
-                Send Message
-              </Button>
+              <Link to={`/me/chats/${check._id}`}  >
+                <Button color="blue" className="mr-2">
+                  Send Message
+          </Button>
+              </Link>
               <Button
                 color="red"
                 appearance="ghost"
                 onClick={() => unfriend(user._id, check._id)}
               >
                 Unfriend
-              </Button>
+          </Button>
             </div>
           );
       }
-    }
-    let frnlen = user.friendRequests.length
-    for (let i = 0; i < frnlen; i++) {
-      let friendRequest = user.friendRequests[i];
-      if (friendRequest._id.toString() === check._id.toString()) {
-        return (
-          <div className="user-btns">
-            <Button
-              color="blue"
-              className="mr-2"
-              onClick={() => acceptfriendRequest(user._id, check._id)}
-            >
-              Accept Request
-            </Button>
-            <Button
-              color="red"
-              onClick={() => declinefriendRequest(user._id, check._id)}
-            >
-              Decline
-            </Button>
-          </div>
-        );
+      let frnlen = user.friendRequests.length
+      for (let i = 0; i < frnlen; i++) {
+        let friendRequest = user.friendRequests[i];
+        if (friendRequest._id.toString() === check._id.toString()) {
+          return (
+            <div className="user-btns">
+              <Button
+                color="blue"
+                className="mr-2"
+                onClick={() => acceptfriendRequest(user._id, check._id)}
+              >
+                Accept Request
+        </Button>
+              <Button
+                color="red"
+                onClick={() => declinefriendRequest(user._id, check._id)}
+              >
+                Decline
+        </Button>
+            </div>
+          );
+        }
       }
     }
     return (
@@ -165,10 +169,8 @@ const Search = ({ location }) => {
           Add Friend
         </Button>
       </div>
-    );
+    )
   }
-
-
 };
 
 export default Search;

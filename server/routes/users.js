@@ -47,7 +47,6 @@ router.post('/updateProfile/:id', async (req, res) => {
                 profilePic:req.body.profilePic,
                 country:req.body.country,
                 gender: req.body.gender,
-                dob: req.body.dob,
                 story: req.body.story
             }
         }

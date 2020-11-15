@@ -3,7 +3,7 @@ import MainBody from './MainBody/MainBody'
 import NavBar from './NavBar'
 import { getCurrentUser } from '../services/authService';
 import { getUserProps } from '../services/userService';
-import Spinner from './common/Spinner';
+import { Loader } from 'rsuite';
 
 const Container = () => {
     const [isLoading, setIsLoading] = useState(true)
@@ -19,7 +19,7 @@ const Container = () => {
         fetchData()
     }, [user])
 
-    return isLoading ? <Spinner />
+    return isLoading ? <Loader size="md" center />
         : (
             <div className="main" >
                 <NavBar user={user} />
@@ -27,5 +27,4 @@ const Container = () => {
             </div>
         )
 }
-
 export default Container;

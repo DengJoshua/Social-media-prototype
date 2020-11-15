@@ -39,6 +39,26 @@ router.post('/likePost', async (req, res) =>  {
           }
       }
   })
+
+    await User.updateOne({ _id: user._id }, {
+        $set: {
+            recent: {
+                user: {
+                    _id: post.user._id,
+                    username: post.user.username,
+                    profilePic: post.user.profilePic
+                },
+                video: post.video,
+                image: post.image,
+                text: post.text,
+                comments: post.comments,
+                shares: post.shares,
+                likes: post.likes,
+                createdAt: post.createdAt
+            }
+        }}
+    )
+
   await User.updateOne({ $and: [
       {
           "_id": post.user._id
@@ -72,7 +92,25 @@ router.post('/unlikePost', async (req, res) => {
     const user = await User.findById(req.body.userId);
     const post = await Post.findById(req.body.postId)
 
-    
+    await User.updateOne({ _id: user._id }, {
+        $set: {
+            recent: {
+                user: {
+                    _id: post.user._id,
+                    username: post.user.username,
+                    profilePic: post.user.profilePic
+                },
+                video: post.video,
+                image: post.image,
+                text: post.text,
+                comments: post.comments,
+                shares: post.shares,
+                likes: post.likes,
+                createdAt: post.createdAt
+            }
+        }}
+    )    
+
        await Post.updateOne({ _id: post._id }, {
             $pull: {
                 likes: {
@@ -103,6 +141,25 @@ router.post('/comment', async (req, res) => {
     const comment = req.body.comment
     const user = await User.findById(req.body.userId)
  
+    await User.updateOne({ _id: user._id }, {
+        $set: {
+            recent: {
+                user: {
+                    _id: post.user._id,
+                    username: post.user.username,
+                    profilePic: post.user.profilePic
+                },
+                video: post.video,
+                image: post.image,
+                text: post.text,
+                comments: post.comments,
+                shares: post.shares,
+                likes: post.likes,
+                createdAt: post.createdAt
+            }
+        }}
+    )
+
     const newComment = new Comment({        
         user: {
             "_id":user._id,
@@ -165,9 +222,27 @@ router.post('/replyComment', async (req, res) => {
     const reply = req.body.reply;
     const post = await Post.findById(req.body.postId)
     const user = await User.findById(req.body.userId)
-    const commentId = req.body.commentId
-        
+    const commentId = req.body.commentId   
     const replyId = new mongoose.Types.ObjectId()
+
+    await User.updateOne({ _id: user._id }, {
+        $set: {
+            recent: {
+                user: {
+                    _id: post.user._id,
+                    username: post.user.username,
+                    profilePic: post.user.profilePic
+                },
+                video: post.video,
+                image: post.image,
+                text: post.text,
+                comments: post.comments,
+                shares: post.shares,
+                likes: post.likes,
+                createdAt: post.createdAt
+            }
+        }}
+    )
 
     await Post.updateOne({ $and: [ {
         _id: post._id
@@ -234,8 +309,8 @@ router.delete('/:id', async(req, res) => {
 })
 
 //Create a post
-router.post('/:id', async (req, res) => {
-    const user = await User.findById(req.params.id)
+router.post('/:userId', async (req, res) => {
+    const user = await User.findById(req.params.userId)
     const post = new Post({
         user: {
             _id: user._id,
@@ -247,6 +322,26 @@ router.post('/:id', async (req, res) => {
         image: req.body.image,
         video: req.body.video
     })
+
+    await User.updateOne({ _id: user._id }, {
+        $set: {
+            recent: {
+                user: {
+                    _id: post.user._id,
+                    username: post.user.username,
+                    profilePic: post.user.profilePic
+                },
+                video: post.video,
+                image: post.image,
+                text: post.text,
+                comments: post.comments,
+                shares: post.shares,
+                likes: post.likes,
+                createdAt: post.createdAt
+            }
+        }}
+    )
+
     user.posts.push(post)
     post.save()
     user.save()

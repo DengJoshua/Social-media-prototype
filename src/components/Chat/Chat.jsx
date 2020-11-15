@@ -6,12 +6,11 @@ import ChatRouter from './ChatRouter';
 import { getCurrentUser } from '../../services/authService';
 import { getUserProps } from '../../services/userService';
 import { SendMessage } from '../../services/friendsService';
+// import socket from 'socket.io-client';
 
 
 const Chat = () => {
   const [friends, setFriends] = useState([])
-  const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState([])
   const [user, setUser] = useState(null)
   const [isloading, setisLoading] = useState(true)
 
@@ -27,13 +26,18 @@ const Chat = () => {
     fetchData()
   }, [user])
 
-  const sendMessage = async (myId, friedId, message) => {
-    await SendMessage(myId, friedId, message)
-    const { data } = await getUserProps(myId)
+  const sendMessage = async (friedId, message, e) => {
+    await SendMessage(user._id, friedId, message)
+    const form = document.getElementById('msg')
+    form.value = ""
+    const { data } = await getUserProps(user._id)
     setUser(data)
+    const chatmsgs = document.querySelector('.chat-messages')
+    chatmsgs.scrollTop = chatmsgs.scrollHeight
   }
 
-  return isloading ? <Loader className="right-side" style={{ margin: "auto", display: 'block' }} /> : (
+
+  return isloading ? <Loader center /> : (
     <React.Fragment>
       <div className="chat p-0 align-baseline ">
         <ChatSide friends={friends} />
@@ -42,6 +46,7 @@ const Chat = () => {
     </React.Fragment>
 
   );
+
 }
 
 export default Chat;

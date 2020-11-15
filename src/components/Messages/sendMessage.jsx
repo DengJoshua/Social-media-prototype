@@ -1,25 +1,32 @@
 import React, { Component } from 'react'
+import { Button } from 'rsuite';
+
+
 
 class SendMessage extends Component {
+    state = {
+        message: ""
+    }
+
     render() {
-        const { sendMessage } = this.props
+        const { sendMessage, friend } = this.props
+        const { message } = this.state
 
         return (
             <div className="chat-form-container">
-                <form id="chat-form">
+                <div id="chat-form">
                     <input
                         id="msg"
                         type="text"
                         placeholder="Enter Message"
                         required
                         autoComplete="off"
+                        onChange={e => this.setState({ message: e.target.value })}
                     />
-                    <button className="btn btn-primary ml-2"
-                        onClick={sendMessage}
-
-
-                    ><i className="fa fa-paper-plane"></i> Send</button>
-                </form>
+                    <Button className="ml-2" appearance='primary'
+                        onClick={() => sendMessage(friend._id, message)}
+                    ><i className="fa fa-paper-plane"></i> Send</Button>
+                </div>
             </div>
         )
     }

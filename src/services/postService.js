@@ -6,6 +6,13 @@ export function getPosts() {
     return http.get(apiEndPoint)
 }
 
+export function getPost(id) {
+    return http.get(apiEndPoint + "/" + id)
+}
+
+
+
+
 export function getUserPosts(userId) {
     return http.post(apiEndPoint + "/myPosts", {userId})
 }

@@ -13,7 +13,7 @@ export function register(user) {
 
 export function updateProfile(data, profilePic) {
     return http.post(apiEndPoint + "/updateProfile/" + data._id, {
-        profilePic,
+        profilePic: profilePic,
         country: data.country,
         gender: data.gender,
         story: data.story   

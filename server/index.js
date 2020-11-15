@@ -6,8 +6,6 @@ const port = process.env.PORT || 5000
 const mongoose = require('mongoose')
 const cors = require('cors')
 const moment = require('moment')
-const bodyParser = require('body-parser')
-const formidable = require('formidable');
 
 
 mongoose.connect('mongodb://localhost/social_app', {
@@ -17,7 +15,6 @@ mongoose.connect('mongodb://localhost/social_app', {
     .then(() => console.log('Successfully connected to database'))
     .catch((err) => console.log('Could not connect to database', err))
 
-        
 
 const server = http.createServer(app)
 const io = socketio(server)
@@ -28,7 +25,7 @@ function formatMessage(username, text) {
       text,
       time: moment().format('h:mm a')
     };
-  }
+}
 
 io.on('connection', (socket) => {
     socket.on('join', ({ username, room}, callback) => {
@@ -53,7 +50,6 @@ io.on('connection', (socket) => {
 
 
 app.use(express.json())
-// app.use(formidable)
 app.use(cors())
 
 app.use('/api/search', require('./routes/search'))
