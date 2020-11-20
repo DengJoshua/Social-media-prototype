@@ -6,12 +6,15 @@ const port = process.env.PORT || 5000
 const mongoose = require('mongoose')
 const cors = require('cors')
 const moment = require('moment')
+const { getUser, addUser, removeUser} = require('./routes/sockets')
 
+let socketID = ""
+var users = []
 
 mongoose.connect('mongodb://localhost/social_app', {
     useUnifiedTopology: true,
     useNewUrlParser: true,  
-    })
+})
     .then(() => console.log('Successfully connected to database'))
     .catch((err) => console.log('Could not connect to database', err))
 
@@ -19,33 +22,17 @@ mongoose.connect('mongodb://localhost/social_app', {
 const server = http.createServer(app)
 const io = socketio(server)
 
-function formatMessage(username, text) {
+function formatMessage(message, user) {
     return {
-      username,
-      text,
-      time: moment().format('h:mm a')
+        user: user.name,
+        message,
+        time: moment().format('h:mm a')
     };
 }
 
 io.on('connection', (socket) => {
-    socket.on('join', ({ username, room}, callback) => {
-        if(error) return callback(error)
-
-        socket.join(user.room)
-        io.to(user.room).emit('roomData', users)
-        callback();
-    })
-
-    socket.on('sendMessage', ( message, callback ) => {
-        io.to(user.room).emit('message', formatMessage(user.username, message))
-        io.to(user.room).emit('roomData', users)
-        callback()
-    })
- 
-    
-    socket.on('disconnect', () => {
-        console.log('User has left room')
-    })
+    console.log("user connected.", socket.id)
+    socketID = socket.id
 })
 
 

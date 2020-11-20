@@ -44,8 +44,8 @@ router.post('/updateProfile/:id', async (req, res) => {
     await User.updateOne({_id: req.params.id}, {
         $set: {
             profile: {
-                profilePic:req.body.profilePic,
                 country:req.body.country,
+                profilePic:req.body.profilePic,
                 gender: req.body.gender,
                 story: req.body.story
             }
