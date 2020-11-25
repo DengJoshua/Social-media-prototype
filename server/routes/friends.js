@@ -1,14 +1,30 @@
 const express = require('express')
-const mongoose = require('mongoose')
-const { User } = require('../models/user')
+const moment = require('moment')
 const router = express.Router()
+const { User } = require('../models/user')
+const { io } = require('../index')
+const mongoose = require('mongoose')
 
+let socketID = ""
+var users = []
+
+// connect socket io
+io.on('connection', (socket) => {
+    socketID = socket.id
+    console.log("User active", socketID)
+    socket.on('disconnect', () => {
+        console.log('User has logged out.')
+    })
+})
+
+// get user friends
 router.get('/:id', async (req, res) => {
     const friends = await User.findById(req.params.id).select('friends')
     res.send(friends)
 })
 
 
+// get user chats and messages
 router.post('/getmessages/:id', async (req, res) =>  {
     const userId = req.body.userId
     const me = await User.findById(req.params.id)
@@ -21,6 +37,7 @@ router.post('/getmessages/:id', async (req, res) =>  {
     res.send(inbox)
 })
 
+// send a message to a friend
 router.post('/sendMessage',  async (req, res) => {
     const me = await User.findById(req.body.myId)
     const friend  = await User.findById(req.body.friendId)
@@ -36,6 +53,7 @@ router.post('/sendMessage',  async (req, res) => {
         "friends.$.inbox": {
         friend: friend.username,
         message: message,
+        time: moment().format('h:mm a'),
         from: me._id
    }}})
     
@@ -48,19 +66,41 @@ router.post('/sendMessage',  async (req, res) => {
         "friends.$.inbox": {
         friend: friend.username, 
         message: message,
+        time: moment().format('h:mm a'),
         from: me._id
    }}})
 
-    res.send("Message sent.")
+    // send message in real time using socket io
+   io.to(users[friend._id]).emit("message", {
+       "_id": mongoose.Types.ObjectId(),
+       "message": message,
+       time: moment().format('h:mm a'),
+       "from": me._id
+   })
+
+   res.send("Message sent.")
 })
 
+// connect active users
+router.post('/connectSocket', async (req, res) => {
+    const user = await User.findById(req.body.userId)
 
+    users[user._id] = socketID 
+    
+    console.log(users)
+    
+    res.json({
+        "status":"success",
+        "message": "Socket connected."
+    })
+})
 
-
-
+// send a friend request to a user
 router.post('/sendFriendRequest', async (req, res) => {
     const me = await User.findById(req.body.myId)
     const user = await User.findById(req.body.reqId)
+
+    // update user friends
 
     await User.updateOne({_id: user._id}, {
     $push: {
@@ -74,7 +114,8 @@ router.post('/sendFriendRequest', async (req, res) => {
         }
     }})
 
-    await User.updateOne({ _id: user._id }, {
+    // send notification about friend request
+       await User.updateOne({ _id: user._id }, {
         $push:{
             notifications: {
                 content: me.username + " has sent you a friend request.",
@@ -84,6 +125,7 @@ router.post('/sendFriendRequest', async (req, res) => {
         }
     })
 
+    // update user friends
     await User.updateOne({ _id: me._id }, {
     $push: {
         "friends": {
@@ -96,7 +138,6 @@ router.post('/sendFriendRequest', async (req, res) => {
         }
     }
     })
-    
 
     res.json({ 
         "status":"success",
@@ -109,7 +150,8 @@ router.post('/acceptFriendRequest', async (req, res) => {
     const me = await User.findById(req.body.myId)
     const user = await User.findById(req.body.reqId)
 
-    await User.updateOne({ _id: user._id }, {
+    // send notification to user
+       await User.updateOne({ _id: user._id }, {
         $push:{
             notifications: {
                 content: me.username + " has accepted your friend request.",
@@ -119,7 +161,8 @@ router.post('/acceptFriendRequest', async (req, res) => {
         }
     })
 
-    await User.updateOne({ _id: me._id },{
+    // remove user from friend requests
+        await User.updateOne({ _id: me._id },{
         $pull: {
             friendRequests: {
                 _id: user._id
@@ -127,6 +170,7 @@ router.post('/acceptFriendRequest', async (req, res) => {
         }
     })
 
+    // update my friends
     await User.updateOne({ _id: me._id }, {
         $push: {
             "friends": {
@@ -140,7 +184,8 @@ router.post('/acceptFriendRequest', async (req, res) => {
         }
         })
 
-    await User.updateOne({ $and: [{_id: user._id}, 
+        // update friend's status from pending to accepted
+        await User.updateOne({ $and: [{_id: user._id}, 
         { "friends._id": me._id  }] }, {
             $set: {
                 "friends.$.status": "accepted"
@@ -159,7 +204,8 @@ router.post('/decline', async(req, res) => {
     const me = await User.findById(req.body.myId)
     const user = await User.findById(req.body.reqId)
 
-    await User.updateOne({ _id: user._id }, {
+    // send notification about decliend friend request
+      await User.updateOne({ _id: user._id }, {
         $push:{
             notifications: {
                 content: me.username + " has declined your friend request.",
@@ -169,7 +215,8 @@ router.post('/decline', async(req, res) => {
         }
     })
 
-    await User.updateOne({ _id: me._id },{
+    // remove friend request from user
+        await User.updateOne({ _id: me._id },{
         $pull: {
             friendRequests: {
                 _id: user._id
@@ -177,7 +224,8 @@ router.post('/decline', async(req, res) => {
         }
     })
 
-    await User.updateOne({ _id: user._id },{
+    // remove user from my friends
+       await User.updateOne({ _id: user._id },{
         $pull: {
             friends: {
                 _id:me._id
@@ -195,6 +243,7 @@ router.post('/cancel', async(req, res) => {
     const me = await User.findById(req.body.myId)
     const user = await User.findById(req.body.reqId)
 
+    // remove friend request
     await User.updateOne({ _id: user._id },{
         $pull: {
             friendRequests: {
@@ -203,6 +252,7 @@ router.post('/cancel', async(req, res) => {
         }
     })
 
+    // remove user from my friends
     await User.updateOne({ _id: me._id },{
         $pull: {
             friends: {
@@ -223,7 +273,8 @@ router.post('/unfriend', async (req, res) => {
     const me = await User.findById(req.body.myId)
     const user = await User.findById(req.body.reqId)
     
-    await User.updateOne({ _id: user._id }, {
+    // send notification about unfriending
+       await User.updateOne({ _id: user._id }, {
         $push:{
             notifications: {
                 content: me.username + " unfriended you.",
@@ -233,7 +284,8 @@ router.post('/unfriend', async (req, res) => {
         }
     })
     
-    await User.updateOne({ _id: user._id },{
+    // remove me from user friends
+        await User.updateOne({ _id: user._id },{
         $pull: {
             friends: {
                 _id:me._id
@@ -241,7 +293,8 @@ router.post('/unfriend', async (req, res) => {
         }
     })
 
-    await User.updateOne({ _id: me._id },{
+    // remove friend from my friends
+        await User.updateOne({ _id: me._id },{
         $pull: {
             friends: {
                 _id: user._id
@@ -254,7 +307,6 @@ router.post('/unfriend', async (req, res) => {
         "message":"User has been unfriended."
     })
 })
-
 
 
 module.exports = router

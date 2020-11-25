@@ -5,8 +5,6 @@ const router = express.Router()
 const mongoose = require('mongoose')
 
 
-
-
 //Get all posts
 router.get('/', async(req, res) => {
     const posts = await Post.find()
@@ -30,7 +28,9 @@ router.post('/likePost', async (req, res) =>  {
     const user = await User.findById(req.body.userId);
     const post = await Post.findById(req.body.postId)
     const userId = post.user._id
-    await  User.updateOne({ _id: userId}, {
+
+    // send notification to post creater
+       await  User.updateOne({ _id: userId}, {
       $push: {
           notifications: {
               profilePic: user.profile.profilePic,
@@ -56,6 +56,8 @@ router.post('/likePost', async (req, res) =>  {
       }
   }})
 
+    //   push user likes
+
   await Post.updateOne({_id: post._id}, {
       $push: {
       likes: {
@@ -63,6 +65,7 @@ router.post('/likePost', async (req, res) =>  {
       }}
   })
  
+  // update user's recent posts activity    
   await User.updateOne({ _id: user._id }, {
     $set: {
         recent: {
@@ -93,27 +96,30 @@ router.post('/unlikePost', async (req, res) => {
     const user = await User.findById(req.body.userId);
     const post = await Post.findById(req.body.postId)
 
-       await Post.updateOne({ _id: post._id }, {
-            $pull: {
-                likes: {
-                    "_id": user._id
-            }}
-        })
-        await User.updateOne({ $and: [
-        {
-            "_id": post.user._id
-        },
-        {
-            "posts._id": post._id
-        }
-        ]},
-        {
+        
+    // remove my like from post's likes
+    await Post.updateOne({ _id: post._id }, {
         $pull: {
-            "posts.$[].likes":{
-            "_id":user._id
+            likes: {
+                "_id": user._id
         }}
     })
+    await User.updateOne({ $and: [
+    {
+        "_id": post.user._id
+    },
+    {
+        "posts._id": post._id
+    }
+    ]},
+    {
+    $pull: {
+        "posts.$[].likes":{
+        "_id":user._id
+    }}
+})
 
+    // update user's recent posts activity    
     await User.updateOne({ _id: user._id }, {
         $set: {
             recent: {
@@ -143,6 +149,7 @@ router.post('/comment', async (req, res) => {
     const comment = req.body.comment
     const user = await User.findById(req.body.userId)
  
+    // create new comment
     const newComment = new Comment({        
         user: {
             "_id":user._id,
@@ -158,6 +165,8 @@ router.post('/comment', async (req, res) => {
     comments: newComment
     }    
 },
+
+    // check whether post is mine
     async function(err, data) {
     if(user._id.toString() != post.user._id.toString()){
         await User.updateOne({ _id: post.user._id }, {
@@ -191,6 +200,7 @@ router.post('/comment', async (req, res) => {
             }
         }})
  
+        // update user's recent posts activity    
         await User.updateOne({ _id: user._id }, {
             $set: {
                 recent: {
@@ -210,8 +220,6 @@ router.post('/comment', async (req, res) => {
             }}
         )
         
-        user.save()
-        post.save()
         res.json({
             "status":"success",
             "message":"Comment posted."
@@ -227,6 +235,7 @@ router.post('/replyComment', async (req, res) => {
     const commentId = req.body.commentId   
     const replyId = new mongoose.Types.ObjectId()
 
+    // post comment on post
     await Post.updateOne({ $and: [ {
         _id: post._id
     }, {
@@ -245,8 +254,9 @@ router.post('/replyComment', async (req, res) => {
             createdAt: new Date().getTime()
     }}
 })
-    
-    await User.updateOne({ $and: [
+
+    // push reply to user's post
+        await User.updateOne({ $and: [
         {_id: post.user._id},
         {"posts._id":post._id},
         {"posts.comments._id": commentId }
@@ -265,6 +275,7 @@ router.post('/replyComment', async (req, res) => {
         }
     }})
 
+    // update user's recent posts activity    
     await User.updateOne({ _id: user._id }, {
         $set: {
             recent: {
@@ -313,6 +324,8 @@ router.delete('/:id', async(req, res) => {
 //Create a post
 router.post('/:userId', async (req, res) => {
     const user = await User.findById(req.params.userId)
+
+    // create new post.
     const post = new Post({
         user: {
             _id: user._id,
@@ -325,6 +338,7 @@ router.post('/:userId', async (req, res) => {
         video: req.body.video
     })
 
+    // update user's recent posts activity    
     await User.updateOne({ _id: user._id }, {
         $set: {
             recent: {
@@ -339,11 +353,13 @@ router.post('/:userId', async (req, res) => {
                 comments: post.comments,
                 shares: post.shares,
                 likes: post.likes,
+
                 createdAt: post.createdAt
             }
         }}
     )
 
+    // update user posts.
     user.posts.push(post)
     post.save()
     user.save()

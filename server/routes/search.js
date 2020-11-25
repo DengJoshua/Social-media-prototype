@@ -1,9 +1,9 @@
 const express = require('express')
-const { model } = require('mongoose')
 const { Post } = require('../models/post')
 const { User } = require('../models/user')
 const router = express.Router()
 
+// search for a user
 router.post('/user', async (req, res) => {
     const query = req.body.query
 
@@ -18,6 +18,7 @@ router.post('/user', async (req, res) => {
     }
 })
 
+// search for a post
 router.post('/post', async (req, res) => {
     const query = req.body.query
     

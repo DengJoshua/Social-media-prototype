@@ -110,7 +110,7 @@
 .active-friend {
 	background: #fff !important;
 	text-decoration: none;
-	border-right: 5px solid #000;
+	border-left: 5px solid #000;
 	color: #000;
 }
 

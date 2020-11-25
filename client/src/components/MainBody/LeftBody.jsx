@@ -4,8 +4,6 @@ import Notifications from './User/Notifications';
 import { Link } from 'react-router-dom';
 import Footer from '../MainBody/Footer';
 
-
-
 export default class LeftBody extends Component {
     state = {
         query: ''
@@ -17,6 +15,8 @@ export default class LeftBody extends Component {
 
         return (
             <div className="left-body"  >
+                {/* notificaions */}
+
                 <Notifications user={user} />
                 <header className="notification-bar">
                     <input type="text" placeholder="Search" id="search" onChange={e => this.setState({ query: e.target.value })} />
@@ -107,6 +107,7 @@ export default class LeftBody extends Component {
         )
     }
 
+    // check if user has liked post
     getLikeClasses(post) {
         const { user } = this.props
         const postlen = post.likes.length;
@@ -125,6 +126,7 @@ export default class LeftBody extends Component {
         )
     }
 
+    // get comment classes if i have commented.
     getCommentClasses(post) {
         const { user } = this.props
         const commentlen = post.comments.length
@@ -139,6 +141,7 @@ export default class LeftBody extends Component {
         return classes
     }
 
+    // format dates
     formatDate(input) {
         const createdAt = new Date(input)
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]

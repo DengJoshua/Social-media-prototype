@@ -66,7 +66,7 @@ class Form extends Component {
         onChange={this.handleChange}
         error={errors[name]}
         placeholder={placeholder}
-        />
+      />
     );
   }
 

@@ -1,19 +1,8 @@
 import React from 'react';
 import { Button } from 'rsuite';
-import {
-  acceptFriendRequest,
-  declineFriendRequest
-} from '../../../services/friendsService';
 
-const FriendRequests = ({ history, user }) => {
+const FriendRequests = ({ history, user, acceptfriendRequest, declinefriendRequest }) => {
 
-  const acceptfriendRequest = async (myId, reqId) => {
-    await acceptFriendRequest(myId, reqId);
-  };
-
-  const declinefriendRequest = async (myId, reqId) => {
-    await declineFriendRequest(myId, reqId);
-  };
 
   return (
     <div className="search-section" style={{ padding: "10px" }}>

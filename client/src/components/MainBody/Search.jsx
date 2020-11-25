@@ -1,31 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { getUserProps, searchUsers } from '../../services/userService';
-import { getCurrentUser } from '../../services/authService';
+import { searchUsers } from '../../services/userService';
 import queryString from 'query-string';
 import { Button, Loader } from 'rsuite';
-import {
-  sendFriendRequest,
-  acceptFriendRequest,
-  declineFriendRequest,
-  cancelFriendRequest,
-  unFriendUser,
-} from '../../services/friendsService';
+
 import { Link } from 'react-router-dom';
 
-const Search = ({ location, history }) => {
+const Search = ({ location, history, user,
+  acceptfriendRequest,
+  declinefriendRequest, unfriend,
+  cancelfriendRequest, sendfriendRequest
+}) => {
   const [users, setUsers] = useState([]);
-  const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [Query, setQuery] = useState("")
 
 
   useEffect(() => {
     const result = queryString.parse(location.search)
-    const user = getCurrentUser();
+    // fetch search data
     async function fetchUsers() {
       const { data } = await searchUsers(result.query);
-      const { data: me } = await getUserProps(user._id);
-      setUser(me);
       setUsers(data);
       setQuery(result.query)
       setIsLoading(false);
@@ -33,35 +27,6 @@ const Search = ({ location, history }) => {
     fetchUsers();
   }, [location.search, users]);
 
-  const sendfriendRequest = async (myId, reqId) => {
-    await sendFriendRequest(myId, reqId);
-    const { data } = await getUserProps(myId);
-    setUser(data);
-  };
-
-  const cancelfriendRequest = async (myId, reqId) => {
-    await cancelFriendRequest(myId, reqId);
-    const { data } = await getUserProps(myId);
-    setUser(data);
-  };
-
-  const acceptfriendRequest = async (myId, reqId) => {
-    await acceptFriendRequest(myId, reqId);
-    const { data } = await getUserProps(myId);
-    setUser(data);
-  };
-
-  const declinefriendRequest = async (myId, reqId) => {
-    await declineFriendRequest(myId, reqId);
-    const { data } = await getUserProps(myId);
-    setUser(data);
-  };
-
-  const unfriend = async (myId, reqId) => {
-    await unFriendUser(myId, reqId);
-    const { data } = await getUserProps(myId);
-    setUser(data);
-  };
 
   return isLoading ? (
     <Loader center />
@@ -95,11 +60,12 @@ const Search = ({ location, history }) => {
           )}
       </div>
     );
-
+  // check whether is my friend
   function checkIsFriend(check) {
     let len = user.friends.length
     for (let i = 0; i < len; i++) {
       let friend = user.friends[i];
+      // is friend request is pending
       if (friend._id.toString() === check._id.toString()) {
         if (friend.status.toString() === 'pending') {
           return (
@@ -109,7 +75,7 @@ const Search = ({ location, history }) => {
                 className="mr-2"
               >
                 Request sent.
-          </Button>
+            </Button>
               <Button
                 color="red"
                 onClick={() => cancelfriendRequest(user._id, check._id)}
@@ -119,6 +85,7 @@ const Search = ({ location, history }) => {
             </div>
           );
         } else
+          // if is my friend
           return (
             <div className="user-btns float-right">
               <Link to={`/me/chats/${check._id}/${check.username}`}  >
@@ -136,6 +103,7 @@ const Search = ({ location, history }) => {
             </div>
           );
       }
+      // check whether is search result is a friend request
       let frnlen = user.friendRequests.length
       for (let i = 0; i < frnlen; i++) {
         let friendRequest = user.friendRequests[i];
@@ -160,6 +128,7 @@ const Search = ({ location, history }) => {
         }
       }
     }
+    // if user is not my friend
     return (
       <div className="user-btns">
         <Button

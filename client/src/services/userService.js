@@ -3,6 +3,7 @@ import http from './httpService'
 const apiEndPoint = "http://localhost:5000/api/users"
 
 
+// sign up and register
 export function register(user) {
     return http.post(apiEndPoint, { 
         email: user.email,
@@ -11,6 +12,7 @@ export function register(user) {
     })
 }
 
+// update user profile
 export function updateProfile(data, profilePic) {
     return http.post(apiEndPoint + "/updateProfile/" + data._id, {
         profilePic: profilePic,
@@ -20,6 +22,7 @@ export function updateProfile(data, profilePic) {
     })
 }
 
+// save user changes
 export function saveUser(user, profilePic){
     if (user._id) {
         const body = { ...user };
@@ -29,10 +32,12 @@ export function saveUser(user, profilePic){
       return http.post(apiEndPoint, user);
 }
 
+// get user properties
 export function getUserProps(id) {
     return http.get(apiEndPoint + "/" + id)
 }
 
+// search users
 export function searchUsers(query) {
     return http.post('http://localhost:5000/api/search/user', { query })
 }

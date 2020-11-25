@@ -12,7 +12,8 @@ const notificationSchema = mongoose.Schema({
 
 const messageSchema = mongoose.Schema({
     from: mongoose.SchemaTypes.ObjectId,
-    message: String
+    message: String,
+    time: String
 })
 
 const friendSchema = mongoose.Schema({
@@ -67,6 +68,7 @@ const userSchema = mongoose.Schema({
 })
 
 
+// generate user token
 userSchema.methods.generateAuthToken = function() {
     const token = jwt.sign(
       {

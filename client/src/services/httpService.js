@@ -3,7 +3,7 @@ import logger from './logService'
 import { toast } from 'react-toastify'
 
 
-
+// debug and check for errors
 axios.interceptors.response.use(null, error => {
     const expectedError = 
     error.response &&
@@ -18,6 +18,7 @@ axios.interceptors.response.use(null, error => {
     return Promise.reject(error)
 })
 
+// send accesstoken in all requests' headers
 export function setJwt(jwt) {
     axios.defaults.headers.common["x-auth-token"] = jwt
 }

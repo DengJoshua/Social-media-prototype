@@ -1,69 +1,71 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Messages from '../Messages/Messages'
 import { getUserProps } from '../../services/userService';
-import { getMessages } from '../../services/friendsService';
+import { getMessages, SendText, connectsocket } from '../../services/friendsService';
 import SendMessage from '../Messages/sendMessage';
-import { SendText } from '../../services/friendsService';
 import { Loader } from 'rsuite';
 import io from 'socket.io-client';
 
 let socket
+const ENDPOINT = 'localhost:5000'
 
 const ChatMain = ({ match, user }) => {
-    const [isLoading, setIsloading] = useState(true)
-    const [friend, setFriend] = useState(null)
+
     const [messages, setMessages] = useState([])
-    const ENPOINT = "localhost:5000"
+    const [friend, setFriend] = useState(null)
     const [message, setMessage] = useState('')
+    const [isLoading, setIsLoading] = useState(true)
 
+    const friendId = match.params.id
 
+    // get current friend and connect socket io
     useEffect(() => {
-        const friendId = match.params.id
-        const name = match.params.name
-
+        // get friend'd data
         async function fetchData() {
             const { data } = await getUserProps(friendId)
-            // const { data: msg } = await getMessages(user._id, friendId)
-            // setMessages(msg)
+            const { data: msg } = await getMessages(user._id, friendId)
+            setMessages(msg)
             setFriend(data)
-            setIsloading(false)
+            setIsLoading(false)
+            await connectsocket(user._id)
         }
         fetchData()
 
-        socket = io(ENPOINT)
-        socket.emit('join', { room: friendId, name }, () => {
-        })
+        // connect socket io
+        socket = io(ENDPOINT)
 
+        // disconnect socket io
         return () => {
             socket.emit('disconnect')
 
             socket.off()
         }
-    }, [ENPOINT, match.params.id, match.params.name])
 
+    }, [friendId, user._id])
+
+    // send message in real time
     useEffect(() => {
-        socket.on('message', (message) => {
-            setMessages([...messages, message])
+        socket.on('message', (text) => {
+            if (text.from === friendId) {
+                setMessages([...messages, text])
+            }
         })
+    }, [messages, friendId])
 
-    }, [messages])
 
-    const sendMessage = () => {
-        if (message) {
-            socket.emit('sendMessage', message, () => setMessage(''))
-        }
+    // send messages and save them in database
+    const sendMessage = async () => {
+        await SendText(user._id, friend._id, message)
+        const { data } = await getMessages(user._id, friend._id)
+        setMessages(data)
+        setMessage("")
+        const form = document.getElementById('msg')
+        form.value = ""
+        const chatmsgs = document.querySelector('.chat-messages')
+        chatmsgs.scrollTop = chatmsgs.scrollHeight
     }
 
-    // const sendMessage = async () => {
-    //     await SendText(user._id, friend._id, message)
-    //     emitMessage()
-    //     const form = document.getElementById('msg')
-    //     form.value = ""
-    //     const chatmsgs = document.querySelector('.chat-messages')
-    //     chatmsgs.scrollTop = chatmsgs.scrollHeight
-    // }
-
-    return isLoading ? <Loader center /> : (
+    return isLoading ? <Loader size="md" center /> : (
         <div>
             <header className="chat-header">
                 <img src={friend.profile.profilePic} alt={friend.username} />

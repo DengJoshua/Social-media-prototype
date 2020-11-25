@@ -9,6 +9,7 @@ import ProtectedRoute from './components/common/protectedRoute'
 
 class App extends Component {
   render() {
+
     return (
       <React.Fragment>
         <Switch >
