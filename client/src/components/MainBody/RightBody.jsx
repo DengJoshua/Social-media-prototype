@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types'
+
 import { Switch } from 'react-router-dom'
+import ProtectedRoute from '../common/protectedRoute'
+
 import Profile from './User/Profile';
 import Search from './Search';
 import Chat from '../Chat/Chat';
@@ -7,13 +11,16 @@ import FriendRequests from './User/FriendRequests';
 import Friends from './User/Friends';
 import NewsFeed from './Posts/NewsFeed';
 import SpecPost from './Posts/specPost'
-import { likePost, unlikePost, saveComment, getPosts, savePost } from '../../services/postService'
+
+import { likePost, unlikePost, saveComment, getPosts } from '../../services/postService'
 import { acceptFriendRequest, declineFriendRequest, unFriendUser, cancelFriendRequest, sendFriendRequest } from '../../services/friendsService'
-import ProtectedRoute from '../common/protectedRoute'
+
 import { storage } from '../../firebase'
 import { getUserProps } from '../../services/userService';
-import { getCurrentUser } from '../../services/authService';
 import { Loader } from 'rsuite';
+
+import { connect } from 'react-redux'
+import { makePost } from '../../actions/postActions'
 
 
 class RightBody extends Component {
@@ -25,21 +32,21 @@ class RightBody extends Component {
         uploading: false,
         posts: [],
         user: '',
+        username: '',
+        profilePic: '',
+        story: '',
+        gender: '',
         isLoading: true
     }
 
     async componentDidMount() {
-        //get current user's token
-        const result = getCurrentUser()
+        const { user } = this.props
 
-        // get posts from database
-        const { data } = await getPosts()
-        this.setState({ posts: data })
+        this.setState({ username: user.username })
+        this.setState({ story: user.profile.story })
+        this.setState({ gender: user.profile.gender })
+        this.setState({ profilePic: user.profile.profilePic })
 
-        // get user details
-
-        const { data: user } = await getUserProps(result._id)
-        this.setState({ user })
         this.setState({ isLoading: false })
     }
 
@@ -52,6 +59,11 @@ class RightBody extends Component {
     setText = (text) => {
         this.setState({ text })
     }
+
+    onChange = (e) => {
+        this.setState({ [e.target.name]: e.target.value })
+    }
+
 
     // like a post
     LikePost = async (id) => {
@@ -119,7 +131,7 @@ class RightBody extends Component {
 
     //delete preview of image
     delImgPreview = () => {
-        this.setState({ file: "" })
+        this.setFile('')
         document.getElementById('previews').style.display = "none"
         document.getElementById("image").style.display = "none";
         document.getElementById("img-preview").style.display = "none"
@@ -129,7 +141,7 @@ class RightBody extends Component {
 
     //delete preview of video
     delVidPreview = () => {
-        this.setState({ file: "" })
+        this.setFile('')
         document.getElementById('previews').style.display = "none"
         document.getElementById("video").style.display = " none";
         document.getElementById('video-preview').style.display = "none"
@@ -150,7 +162,7 @@ class RightBody extends Component {
                 document.getElementById("img-preview").setAttribute("src", event.target.result)
             };
             fileReader.readAsDataURL(file[0])
-            this.setState({ file: file[0] })
+            this.setFile(file[0])
         }
     }
 
@@ -166,7 +178,7 @@ class RightBody extends Component {
                 document.getElementById("video-preview").setAttribute("src", event.target.result)
             };
             fileReader.readAsDataURL(file[0])
-            this.setState({ file: file[0] })
+            this.setFile(file[0])
         }
     }
 
@@ -174,7 +186,11 @@ class RightBody extends Component {
     createPost = async () => {
         // get state 
         const { text, imgUrl, vidUrl } = this.state
-        await savePost(text, imgUrl, vidUrl, this.state.user._id)
+        const id = this.props.user._id
+        const post = { text, imgUrl, vidUrl }
+
+        //create post
+        this.props.makePost(post, id)
 
         //clear state after creating post
         this.setState({ text: "" })
@@ -185,11 +201,6 @@ class RightBody extends Component {
         this.delImgPreview()
         this.delVidPreview()
         document.getElementById('post').value = ""
-
-        //get updated data from server and set the state
-        const { data: posts } = await getPosts()
-        this.setState({ posts })
-        this.setState({ uploading: false })
     }
 
     // send friend request
@@ -228,19 +239,30 @@ class RightBody extends Component {
         this.setState({ user: data })
     };
 
+    // save changes made to user profile
+    saveUser = async () => {
+        console.log("user")
+
+    }
+
+
 
     render() {
-        const { posts, text, uploading, user, isLoading } = this.state
+        const { text, uploading, isLoading, username, profilePic, story, gender
+        } = this.state
 
-        return isLoading ? <Loader size="md" center /> : (
+        const { user, posts } = this.props
+
+        return isLoading ? <div className="right-side"> <Loader size="md" center /> </div> : (
             <div className="right-side" >
+
                 {/* Creating paths to different routes */}
                 <Switch >
                     {/* Posts' route and path */}
                     <ProtectedRoute exact path="/me/home" render={props => <NewsFeed {...props} user={user}
                         // setting props to posts route
                         unlikePost={this.unLikePost} likePost={this.LikePost}
-                        posts={posts} uploading={uploading}
+                        posts={posts} uploading={uploading} setFile={this.setFile}
                         text={text} createPost={this.createPost}
                         handleUpload={this.handleUpload} setText={this.setText}
                         previewImg={this.previewImg} previewVideo={this.previewVideo}
@@ -260,7 +282,17 @@ class RightBody extends Component {
                     />
 
                     {/* Profile route */}
-                    <ProtectedRoute path="/me/profile" render={props => <Profile {...props} user={user} />} />
+                    <ProtectedRoute path="/me/profile" render={props => <Profile {...props}
+                        previewImg={this.previewImg}
+                        onChange={this.onChange}
+                        username={username}
+                        gender={gender}
+                        story={story}
+                        profilePic={profilePic}
+                    />
+                    }
+
+                    />
 
                     {/* Chatting route  */}
                     <ProtectedRoute path="/me/chats" render={props => <Chat {...props} user={user} />} />
@@ -293,4 +325,13 @@ class RightBody extends Component {
     }
 }
 
-export default RightBody;
+RightBody.propTypes = {
+    makePost: PropTypes.func.isRequired
+}
+
+
+const mapStateToProps = state => ({
+    post: state.posts.post
+})
+
+export default connect(mapStateToProps, { makePost })(RightBody);

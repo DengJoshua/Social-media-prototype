@@ -5,15 +5,16 @@ const { User } = require('../models/user')
 const { io } = require('../index')
 const mongoose = require('mongoose')
 
+const users = []
 let socketID = ""
-var users = []
 
 // connect socket io
 io.on('connection', (socket) => {
     socketID = socket.id
-    console.log("User active", socketID)
-    socket.on('disconnect', () => {
-        console.log('User has logged out.')
+
+    socket.on('disconnect', ({ id, name }) => {
+        console.log('User has logged out.', id, name)
+        console.log(users)
     })
 })
 
@@ -85,10 +86,7 @@ router.post('/sendMessage',  async (req, res) => {
 router.post('/connectSocket', async (req, res) => {
     const user = await User.findById(req.body.userId)
 
-    users[user._id] = socketID 
-    
-    console.log(users)
-    
+    users[user._id] = socketID
     res.json({
         "status":"success",
         "message": "Socket connected."

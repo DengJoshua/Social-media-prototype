@@ -5,13 +5,14 @@ import './MainBody.css'
 
 class MainBody extends Component {
     render() {
-        const { user } = this.props;
+        const { user, posts } = this.props;
         return (
             <React.Fragment>
-            <div className="main-body rounded">
-            <RightBody user={user} />
-            <LeftBody user={user} />
-            </div>
+                <div className="main-body rounded">
+                    <RightBody user={user} posts={posts}
+                    />
+                    <LeftBody user={user} />
+                </div>
             </React.Fragment>
         );
     }

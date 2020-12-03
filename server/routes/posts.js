@@ -8,6 +8,7 @@ const mongoose = require('mongoose')
 //Get all posts
 router.get('/', async(req, res) => {
     const posts = await Post.find()
+    posts.reverse()
     res.send(posts)
 })
 
@@ -20,6 +21,7 @@ router.get('/:id', async(req, res) => {
 //get user's posts
 router.post('/myPosts', async (req, res) => {
     const posts = await User.findById(req.body.userId).select("posts -_id ")
+    posts.reverse()
     res.send(posts)
 })
 
@@ -363,7 +365,7 @@ router.post('/:userId', async (req, res) => {
     user.posts.push(post)
     post.save()
     user.save()
-    res.json(post)
+    res.send(post)
 })
 
 module.exports = router;

@@ -1,0 +1,7 @@
+export const FETCH_USER_DATA = 'FETCH_USER_DATA'
+export const LOGOUT = 'LOGOUT'
+export const GET_POSTS = 'GET_POSTS'    
+export const MAKE_POST = 'MAKE_POST'
+export const LIKE_POST = 'LIKE_POST'
+export const UNLIKE_POST = 'UNLIKE_POST'
+export const POST_COMMENT = 'POST_COMMENT'

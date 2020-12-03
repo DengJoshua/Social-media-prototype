@@ -6,7 +6,7 @@ const Message = ({ message, user, friend }) => {
     return message.from === user._id ? (
         <div className="message">
             <section className="mine ml-auto" >
-                <p className="meta">Me <span>{message.time}</span></p>
+                <p className="meta">Me <span style={{ fontSize: '12px', color: "#f1f", float: "right" }}>{message.time}</span></p>
                 <p className="text">
                     {message.message}
                 </p>
@@ -15,7 +15,7 @@ const Message = ({ message, user, friend }) => {
     ) : (
             <div className="message mr-auto">
                 <section className="not-mine" >
-                    <p className="meta">{friend} <span>{message.time}</span></p>
+                    <p className="meta">{friend} <span style={{ fontSize: '12px', color: "#f1f", float: "right" }} >{message.time}</span></p>
                     <p className="text">
                         {message.message}
                     </p>

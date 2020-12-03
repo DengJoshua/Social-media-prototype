@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Badge, Icon } from 'rsuite'
+import { Badge, Button, Icon } from 'rsuite'
 
 class Menu extends Component {
+
+
     render() {
-        const { user } = this.props;
+        const { user, Logout } = this.props;
         return (
             <React.Fragment>
                 <div className="p-4" id={user._id} >
@@ -29,6 +31,7 @@ class Menu extends Component {
                             <React.Fragment>FriendRequests <Badge content={this.props.user.friendRequests.length} /></React.Fragment>
                         }</h6>
                     </NavLink>
+                    <Button color="cyan" onClick={Logout}>Logout</Button>
                 </div>
             </React.Fragment>
 

@@ -21,8 +21,8 @@ const SpecPost = ({ match, history, postComment, likePost, unlikePost, user }) =
     }, [match.params])
 
     return isLoading ? <Loader size="md" center /> : (
-        <React.Fragment>
-            <i className="fa fa-arrow-left goback" onClick={() => history.goBack()} />
+        <div style={{ padding: '10px' }} >
+            <i className="fa fa-arrow-left goback" onClick={() => history.goBack()}> Go back </i>
             <div className="section mb-3" key={post._id} style={{ padding: "10px" }} >
                 <header>
                     <main style={{ display: "flex" }} >
@@ -72,7 +72,7 @@ const SpecPost = ({ match, history, postComment, likePost, unlikePost, user }) =
                     </section>
                 </div>
             </div>
-        </React.Fragment>
+        </div>
     );
     function getLikeClasses(post) {
         const postlen = post.likes.length;

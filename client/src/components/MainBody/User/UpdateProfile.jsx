@@ -116,8 +116,8 @@ class UpdateProfile extends Form {
                         <label>
                             <input type="file" onChange={(e) => this.previewImg(e)} />
                             <i className="fa fa-photo uploadButton text-secondary" />
-                        </label> Change
-                        {this.createInput("story", "Create story")}
+                        </label> Choose
+                       {this.createInput("story", "Create story")}
                         {this.createInput("country", "Enter Country")}
                         {this.createInput("gender", "Enter Gender")}
                         <button className="btn btn-outline-primary">Save</button>

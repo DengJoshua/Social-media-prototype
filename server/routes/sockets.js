@@ -1,8 +1,12 @@
 const users = [];
 
-const addUser = ({ id, name, room }) => {
-    const user = { id, name, room }
-    
+const addUser = (id, name) => {
+    const active = users.find((user) => user.id = id)
+    if(active) {
+        return { error: "You are already active" }
+    }
+
+    const user = { id, name }
     users.push(user)
     return { user }
 }
@@ -17,4 +21,4 @@ const removeUser = (id) => {
 
 const getUser = (id) => users.find(user => user.id === id)
 
-module.exports = { addUser, removeUser, getUser}
+module.exports = { addUser, removeUser, getUser, users }

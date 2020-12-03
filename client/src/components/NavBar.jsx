@@ -6,7 +6,7 @@ import { Sidenav, Nav, Dropdown, Icon } from 'rsuite';
 
 import Menu from './Menu';
 
-const NavBar = ({ user }) => {
+const NavBar = ({ user, Logout }) => {
   // const [user, setUser] = useState(null)
   // const [isLoaiding, setIsloading] = useState(true)
   // useEffect(() => {
@@ -21,7 +21,7 @@ const NavBar = ({ user }) => {
 
   return (
     <div className="mynavbar" >
-      <Menu user={user} />
+      <Menu user={user} Logout={Logout} />
       <Sidenav defaultOpenKeys={['3', '4']} activeKey="1" componentClass="div" style={{ background: "transparent" }}  >
         <Sidenav.Body>
           <Nav>

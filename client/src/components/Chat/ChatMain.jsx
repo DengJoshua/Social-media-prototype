@@ -18,14 +18,15 @@ const ChatMain = ({ match, user }) => {
 
     const friendId = match.params.id
 
+
     // get current friend and connect socket io
     useEffect(() => {
         // get friend'd data
         async function fetchData() {
-            const { data } = await getUserProps(friendId)
-            const { data: msg } = await getMessages(user._id, friendId)
-            setMessages(msg)
-            setFriend(data)
+            const { data: friend } = await getUserProps(friendId)
+            const { data: messages } = await getMessages(user._id, friendId)
+            setMessages(messages)
+            setFriend(friend)
             setIsLoading(false)
             await connectsocket(user._id)
         }
@@ -33,15 +34,17 @@ const ChatMain = ({ match, user }) => {
 
         // connect socket io
         socket = io(ENDPOINT)
+        let name = user.username
+        let id = user._id
 
         // disconnect socket io
         return () => {
-            socket.emit('disconnect')
+            socket.emit('disconnect', { id, name: name })
 
             socket.off()
         }
 
-    }, [friendId, user._id])
+    }, [friendId, user._id, user.username])
 
     // send message in real time
     useEffect(() => {
@@ -50,7 +53,7 @@ const ChatMain = ({ match, user }) => {
                 setMessages([...messages, text])
             }
         })
-    }, [messages, friendId])
+    }, [friendId, messages])
 
 
     // send messages and save them in database

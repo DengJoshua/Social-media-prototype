@@ -26,7 +26,7 @@ exports.io = io
 app.use(express.json())
 app.use(cors())
 
-// applying api's
+// applying apis
 
 // search api
 app.use('/api/search', require('./routes/search'))

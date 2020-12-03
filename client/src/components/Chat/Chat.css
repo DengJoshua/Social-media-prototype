@@ -82,6 +82,8 @@
 	background: #ddffcc;
 	padding: 5px;
 	border-radius: 5px;
+	min-width: 100px;
+	font-size: 16px;
 }
 
 .not-mine {
@@ -89,7 +91,16 @@
 	width: fit-content;
 	background: #ccffff;
 	border-radius: 5px;
+	min-width: 100px;
+	font-size: 16px;
 }
+
+.meta {
+	color: #2196f3;
+	font-size: 14px;
+
+}
+
 
 .friends {
 	margin-top: 17px;

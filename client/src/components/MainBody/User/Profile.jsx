@@ -1,24 +1,33 @@
 import React, { Component } from 'react'
-import { getCurrentUser } from '../../../services/authService'
-import { getUserProps } from '../../../services/userService'
+import { TextField } from '@material-ui/core';
 
 export default class Profile extends Component {
-    state = {
-        user: ""
-    }
-
-    async componentDidMount() {
-        const result = getCurrentUser()
-        const { data: user } = await getUserProps(result._id)
-        this.setState({ user })
-    }
-
-
     render() {
-        const { user } = this.state;
+        const { onChange, profilePic, story, gender, username } = this.props;
         return (
-            <div>
-                <p className="username" >{user.username}</p>
+            <div className="w-100">
+                <div className="profile-page">
+                    <p className="username" >{username}</p>
+                    <br />
+                    <img src={profilePic}
+                        style={{ width: "150px", height: "150px", marginBottom: '20px' }}
+                        alt="" className="rounded-circle"
+                    />
+                    <label style={{ width: '20px' }} >
+                        <input type="file" />
+                        <i className="fa fa-photo uploadButton text-secondary" />
+                    </label> Change
+                    <label style={{ float: 'left' }} >Story :</label>
+                    <TextField value={story} className="text-field"
+                        onChange={(e) => onChange(e)}
+                        name="story"
+                    />
+                    <label style={{ float: 'left' }} >Gender :</label>
+                    <TextField value={gender} className="text-field"
+                        onChange={e => onChange(e)}
+                        name="gender"
+                    />
+                </div>
             </div>
         )
     }

@@ -8,9 +8,10 @@ import 'rsuite/dist/styles/rsuite-default.css'
 import '@material-ui/core/styles/index'
 import './index.css'
 
+
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
+   <BrowserRouter>
     <App />
     </BrowserRouter>
   </React.StrictMode>,
