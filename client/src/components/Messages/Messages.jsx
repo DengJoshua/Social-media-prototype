@@ -1,13 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Message from './Message'
+import ScrollToBottom from 'react-scroll-to-bottom'
 
-class Messages extends Component {
-    render() {
-        const { messages, user, friend } = this.props
 
-        return (
+
+function Messages({ messages, user, friend, scrollToBottom }) {
+    return (
+        <ScrollToBottom value={scrollToBottom} >
             <div className="chat-messages" id="chat-messages"
-                onLoad={() => console.log('works')}  >
+            >
                 {
                     messages.length === 0 ? <p className="general-msg text-center" >You are now friends with {friend}.</p> :
                         messages.map(message => (
@@ -15,8 +16,8 @@ class Messages extends Component {
                         ))
                 }
             </div>
-        );
-    }
+        </ScrollToBottom>
+    );
 }
 
 export default Messages;

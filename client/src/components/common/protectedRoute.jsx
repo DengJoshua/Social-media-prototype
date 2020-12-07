@@ -8,7 +8,6 @@ const ProtectedRoute = ({ path, component: Component, render, ...rest }) => {
       {...rest}
       render={props => {
         if (!getCurrentUser()) {
-          alert("Login token has expired, please login or sign up.")
           return (
             <Redirect
               to={{

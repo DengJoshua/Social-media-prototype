@@ -1,32 +1,27 @@
 #login {
-	width: 300px;
-	color: #000;
-	background: #fff;
-	border-radius: 5px;
-	padding: 10px;
-	animation: notifyzoom .5s;
-	margin-left: 20px;
+  width: 300px;
+  color: #000;
+  background: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  animation: notifyzoom 0.5s;
+  margin-left: 20px;
 }
-
 
 #sign-up {
-	width: 300px;
-	color: #000;
-	background: #fff;
-	border-radius: 5px;
-	padding: 10px;
-	animation: notifyzoom .5s;
+  width: 300px;
+  color: #000;
+  background: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  animation: notifyzoom 0.5s;
 }
 
-
-@keyframes notifyzoom
-{
-	0%
-	{
-		transform: scaleY(0);
-	}
-	100%
-	{
-		transform: scaleY(1);
-	}
+@keyframes notifyzoom {
+  0% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
 }

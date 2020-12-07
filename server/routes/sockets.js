@@ -1,24 +1,24 @@
 const users = [];
 
 const addUser = (id, name) => {
-    const active = users.find((user) => user.id = id)
-    if(active) {
-        return { error: "You are already active" }
-    }
+  const active = users.find((user) => (user.id = id));
+  if (active) {
+    return { error: "You are already active" };
+  }
 
-    const user = { id, name }
-    users.push(user)
-    return { user }
-}
+  const user = { id, name };
+  users.push(user);
+  return { user };
+};
 
 const removeUser = (id) => {
-    const index = users.findIndex((user) => user.id = id)
+  const index = users.findIndex((user) => (user.id = id));
 
-    if(index !== -1) {
-        return users.splice(index, 1)[0]
-    }
-}
+  if (index !== -1) {
+    return users.splice(index, 1)[0];
+  }
+};
 
-const getUser = (id) => users.find(user => user.id === id)
+const getUser = (id) => users.find((user) => user.id === id);
 
-module.exports = { addUser, removeUser, getUser, users }
+module.exports = { addUser, removeUser, getUser, users };

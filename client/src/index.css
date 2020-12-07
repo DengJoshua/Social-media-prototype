@@ -1,20 +1,18 @@
 * {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body,
 html {
-	font-size: 14px;
-	font-weight: 500;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 #root {
-	height: 100%;
-	width: 100%;
-	max-width: 1400px;
-	margin: auto;
-
-
+  height: 100%;
+  width: 100%;
+  max-width: 1400px;
+  margin: auto;
 }

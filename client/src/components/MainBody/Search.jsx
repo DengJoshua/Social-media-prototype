@@ -1,31 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { searchUsers } from '../../services/userService';
+import PropTypes from 'prop-types'
+
 import queryString from 'query-string';
 import { Button, Loader } from 'rsuite';
-
 import { Link } from 'react-router-dom';
+
+import { connect } from 'react-redux'
+import { searchUsers, sendFriendRequest } from '../../actions/friendActions'
+
 
 const Search = ({ location, history, user,
   acceptfriendRequest,
   declinefriendRequest, unfriend,
-  cancelfriendRequest, sendfriendRequest
+  cancelfriendRequest, sendFriendRequest, users, isLoading, searchUsers
 }) => {
-  const [users, setUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [Query, setQuery] = useState("")
 
 
   useEffect(() => {
     const result = queryString.parse(location.search)
-    // fetch search data
-    async function fetchUsers() {
-      const { data } = await searchUsers(result.query);
-      setUsers(data);
-      setQuery(result.query)
-      setIsLoading(false);
-    }
-    fetchUsers();
-  }, [location.search, users]);
+    setQuery(result.query)
+    searchUsers(result.query)
+    console.log('called')
+  }, [location.search, searchUsers]);
 
 
   return isLoading ? (
@@ -128,12 +125,12 @@ const Search = ({ location, history, user,
         }
       }
     }
-    // if user is not my friend
+    // if user is not my friend 
     return (
       <div className="user-btns">
         <Button
           color="blue"
-          onClick={() => sendfriendRequest(user._id, check._id)}
+          onClick={() => sendFriendRequest(user._id, check._id)}
         >
           Add Friend
         </Button>
@@ -142,4 +139,16 @@ const Search = ({ location, history, user,
   }
 };
 
-export default Search;
+Search.propTypes = {
+  users: PropTypes.array.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  searchUsers: PropTypes.func.isRequired,
+  sendFriendRequest: PropTypes.func.isRequired
+}
+
+const mapStateToProps = state => ({
+  users: state.friends.users,
+  isLoading: state.friends.isLoading
+})
+
+export default connect(mapStateToProps, { searchUsers, sendFriendRequest })(Search);
