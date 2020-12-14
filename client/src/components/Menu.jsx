@@ -69,7 +69,11 @@ class Menu extends Component {
               )}
             </h6>
           </NavLink>
-          <Button color="cyan" onClick={Logout}>
+          <Button
+            color="cyan"
+            onClick={Logout}
+            style={{ marginTop: "10px", fontSize: "16px" }}
+          >
             Logout
           </Button>
         </div>

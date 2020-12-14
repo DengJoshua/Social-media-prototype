@@ -12,16 +12,7 @@ import Friends from "./User/Friends";
 import NewsFeed from "./Posts/NewsFeed";
 import SpecPost from "./Posts/specPost";
 
-import {
-  acceptFriendRequest,
-  declineFriendRequest,
-  unFriendUser,
-  cancelFriendRequest,
-  sendFriendRequest,
-} from "../../services/friendsService";
-
 import { storage } from "../../firebase";
-import { getUserProps } from "../../services/userService";
 import { Loader } from "rsuite";
 
 import { connect } from "react-redux";
@@ -31,6 +22,14 @@ import {
   unlikePost,
   postComment,
 } from "../../actions/postActions";
+import {
+  searchUsers,
+  sendFriendRequest,
+  unFriend,
+  acceptFriendRequest,
+  declineFriendRequest,
+  cancelFriendRequest,
+} from "../../actions/userActions";
 
 class RightBody extends Component {
   state = {
@@ -215,46 +214,6 @@ class RightBody extends Component {
     document.getElementById("post").value = "";
   };
 
-  // send friend request
-  sendfriendRequest = async (myId, reqId) => {
-    await sendFriendRequest(myId, reqId);
-    const { data } = await getUserProps(myId);
-    this.setState({ user: data });
-  };
-
-  // cancel sent friend requets
-  cancelfriendRequest = async (myId, reqId) => {
-    await cancelFriendRequest(myId, reqId);
-    const { data } = await getUserProps(myId);
-    this.setState({ user: data });
-  };
-
-  // accept a friend request
-  acceptfriendRequest = async (myId, reqId) => {
-    await acceptFriendRequest(myId, reqId);
-    const { data } = await getUserProps(myId);
-    this.setState({ user: data });
-  };
-
-  // decline a friend request
-  declinefriendRequest = async (myId, reqId) => {
-    await declineFriendRequest(myId, reqId);
-    const { data } = await getUserProps(myId);
-    this.setState({ user: data });
-  };
-
-  // unfriend a friend
-  unfriend = async (myId, reqId) => {
-    await unFriendUser(myId, reqId);
-    const { data } = await getUserProps(myId);
-    this.setState({ user: data });
-  };
-
-  // save changes made to user profile
-  saveUser = async () => {
-    console.log("user");
-  };
-
   render() {
     const {
       text,
@@ -266,7 +225,16 @@ class RightBody extends Component {
       gender,
     } = this.state;
 
-    const { user, posts } = this.props;
+    const {
+      user,
+      posts,
+      sendFriendRequest,
+      searchUsers,
+      acceptFriendRequest,
+      unFriend,
+      declineFriendRequest,
+      cancelFriendRequest,
+    } = this.props;
 
     return isLoading ? (
       <div className="right-side">
@@ -310,11 +278,12 @@ class RightBody extends Component {
               <Search
                 {...props}
                 user={user}
-                acceptfriendRequest={this.acceptfriendRequest}
-                declinefriendRequest={this.declinefriendRequest}
-                unfriend={this.unfriend}
-                cancelfriendRequest={this.cancelfriendRequest}
-                sendfriendRequest={this.sendfriendRequest}
+                searchUsers={searchUsers}
+                acceptFriendRequest={acceptFriendRequest}
+                declineFriendRequest={declineFriendRequest}
+                unFriend={unFriend}
+                cancelFriendRequest={cancelFriendRequest}
+                sendFriendRequest={sendFriendRequest}
               />
             )}
           />
@@ -348,8 +317,8 @@ class RightBody extends Component {
               <Friends
                 {...props}
                 user={user}
-                unfriend={this.unfriend}
-                cancelfriendRequest={this.cancelfriendRequest}
+                unFriend={unFriend}
+                cancelFriendRequest={cancelFriendRequest}
               />
             )}
           />
@@ -361,8 +330,8 @@ class RightBody extends Component {
               <FriendRequests
                 {...props}
                 user={user}
-                acceptfriendRequest={this.acceptfriendRequest}
-                declinefriendRequest={this.declinefriendRequest}
+                acceptFriendRequest={acceptFriendRequest}
+                declineFriendRequest={declineFriendRequest}
               />
             )}
           />
@@ -391,10 +360,17 @@ RightBody.propTypes = {
   likePost: PropTypes.func.isRequired,
   unlikePost: PropTypes.func.isRequired,
   postComment: PropTypes.func.isRequired,
+  searchUsers: PropTypes.func.isRequired,
+  unFriend: PropTypes.func.isRequired,
+  sendFriendRequest: PropTypes.func.isRequired,
+  acceptFriendRequest: PropTypes.func.isRequired,
+  declineFriendRequest: PropTypes.func.isRequired,
+  cancelFriendRequest: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   post: state.posts.post,
+  friends: state.user.friends,
 });
 
 export default connect(mapStateToProps, {
@@ -402,4 +378,10 @@ export default connect(mapStateToProps, {
   likePost,
   unlikePost,
   postComment,
+  unFriend,
+  searchUsers,
+  sendFriendRequest,
+  acceptFriendRequest,
+  declineFriendRequest,
+  cancelFriendRequest,
 })(RightBody);

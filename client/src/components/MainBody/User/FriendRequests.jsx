@@ -4,8 +4,8 @@ import { Button } from "rsuite";
 const FriendRequests = ({
   history,
   user,
-  acceptfriendRequest,
-  declinefriendRequest,
+  acceptFriendRequest,
+  declineFriendRequest,
 }) => {
   return (
     <div className="search-section" style={{ padding: "10px" }}>
@@ -28,13 +28,13 @@ const FriendRequests = ({
                 <Button
                   color="blue"
                   className="mr-2"
-                  onClick={() => acceptfriendRequest(user._id, request._id)}
+                  onClick={() => acceptFriendRequest(user._id, request._id)}
                 >
                   Accept Request
                 </Button>
                 <Button
                   color="red"
-                  onClick={() => declinefriendRequest(user._id, request._id)}
+                  onClick={() => declineFriendRequest(user._id, request._id)}
                 >
                   Decline
                 </Button>

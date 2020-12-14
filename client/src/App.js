@@ -15,7 +15,6 @@ class App extends Component {
     const logoutbox = document.getElementById("logout");
     logoutbox.style.display = "";
     logoutbox.parentElement.style.overflow = "hidden";
-    console.log(logoutbox);
   };
 
   completeLogout = () => {

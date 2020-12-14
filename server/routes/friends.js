@@ -145,14 +145,12 @@ router.post("/sendFriendRequest", async (req, res) => {
   );
 
   const friend = {
-    friends: {
-      _id: user._id,
-      username: user.username,
-      profilePic: user.profile.profilePic,
-      status: "pending",
-      sentByMe: true,
-      inbox: [],
-    },
+    _id: user._id,
+    username: user.username,
+    profilePic: user.profile.profilePic,
+    status: "pending",
+    sentByMe: true,
+    inbox: [],
   };
 
   res.send(friend);
@@ -216,10 +214,16 @@ router.post("/acceptFriendRequest", async (req, res) => {
     }
   );
 
-  res.json({
-    status: "succes",
-    message: "You are friends",
-  });
+  const friend = {
+    _id: user._id,
+    username: user.username,
+    profilePic: user.profile.profilePic,
+    status: "accepted",
+    sentByMe: false,
+    inbox: [],
+  };
+
+  res.send(friend);
 });
 
 //decline a friend request

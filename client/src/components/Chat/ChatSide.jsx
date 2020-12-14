@@ -10,7 +10,7 @@ export default class ChatSide extends Component {
         <Search />
         <div className="friends">
           {friends.length === 0 ? (
-            <NavLink to="/me/home" className="text-center">
+            <NavLink to="/me/home" className="text-center align-self-center">
               Find Friends
             </NavLink>
           ) : (

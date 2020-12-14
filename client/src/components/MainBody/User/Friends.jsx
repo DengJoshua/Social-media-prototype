@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "rsuite";
 import { Link } from "react-router-dom";
 
-const Friends = ({ history, user, unfriend, cancelfriendRequest }) => {
+const Friends = ({ history, user, unFriend, cancelFriendRequest }) => {
   return user.friends.length === 0 ? (
     <div style={{ padding: "10px" }}>
       <i className="fa fa-arrow-left goback" onClick={() => history.goBack()} />{" "}
@@ -27,7 +27,7 @@ const Friends = ({ history, user, unfriend, cancelfriendRequest }) => {
               </Button>
               <Button
                 color="red"
-                onClick={() => cancelfriendRequest(user._id, friend._id)}
+                onClick={() => cancelFriendRequest(user._id, friend._id)}
               >
                 Cancel Request
               </Button>
@@ -51,7 +51,7 @@ const Friends = ({ history, user, unfriend, cancelfriendRequest }) => {
               <Button
                 color="red"
                 appearance="ghost"
-                onClick={() => unfriend(user._id, friend._id)}
+                onClick={() => unFriend(user._id, friend._id)}
               >
                 Unfriend
               </Button>
